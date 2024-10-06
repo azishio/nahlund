@@ -1,0 +1,19 @@
+services:
+  neo4j:
+    image: neo4j:5.24-community
+    networks:
+      - internal
+    environment:
+      - NEO4J_AUTH=neo4j/password
+      - NEO4JLABS_PLUGINS=["apoc"]
+  socketio:
+    image: ghcr.io/azishio/nahlun-socketio:latest
+    networks:
+      - internal
+  server:
+    image: ghcr.io/azishio/nahlun-server:latest
+    networks:
+      - internal
+networks:
+  internal:
+    driver: bridge
