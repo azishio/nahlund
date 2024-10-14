@@ -1,0 +1,19 @@
+[Unit]
+Description=Server for Nahlun
+Wants=network-online.target docker.service
+After=network-online.target docker.service
+
+[Service]
+Type=oneshot
+RemainAfterExit=yes
+
+WorkingDirectory=/opt/nahlund
+
+ExecStart=/usr/local/bin/docker compose -p nahlund up
+ExecStop=/usr/local/bin/docker compose -p nahlund down
+ExecReload=/usr/local/bin/docker compose -p nahlund restart
+
+Restart=always
+
+[Install]
+WantedBy=multi-user.target
