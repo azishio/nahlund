@@ -3,12 +3,23 @@
 set -eu
 
 #### ディレクトリの作成
-sudo mkdir -p /etc/nahlund
-sudo mkdir -p /opt/nahlund
+sudo mkdir -p /etc/nahlund/import /opt/nahlund/neo4j_scripts
 
 #### ファイルのコピー
 sudo curl -fsSL https://raw.githubusercontent.com/azishio/nahlund/refs/heads/main/docker-compose.yml -o /opt/nahlund/docker-compose.yml
 sudo curl -fsSL https://raw.githubusercontent.com/azishio/nahlund/refs/heads/main/nahlund.service -o /etc/systemd/system/nahlund.service
+
+sudo curl -fL https://github.com/azishio/rnet/releases/latest/download/river_node.csv.zst -o /etc/nahlund/import/river_node.csv.zst
+sudo curl -fL https://github.com/azishio/rnet/releases/latest/download/river_link.csv.zst -o /etc/nahlund/import/river_kink.csv.zst
+sudo curl -fL https://github.com/azishio/rnet/releases/latest/download/delaunay.csv.zst -o /etc/nahlund/import/delaunay.csv.zst
+
+#### ファイルの解凍
+sudo zstd -d /etc/nahlund/import/river_node.csv.zst -o /etc/nahlund/import/river_node.csv
+sudo zstd -d /etc/nahlund/import/river_link.csv.zst -o /etc/nahlund/import/river_link.csv
+sudo zstd -d /etc/nahlund/import/delaunay.csv.zst -o /etc/nahlund/import/delaunay.csv
+
+### 圧縮ファイルの削除
+sudo rm /etc/nahlund/import/*.zst
 
 #### 初期環境変数ファイルの作成
 # システムメモリをバイト単位で取得
@@ -53,6 +64,5 @@ NEO4J_server_memory_heap_max__size=${neo4j_memory_size}G
 NEO4J_server_memory_pagecache_size=${page_cache_size}G
 EOF
 
-# socketio.env ファイルを作成（内容が空の場合）
-sudo tee /etc/nahlund/socketio.env > /dev/null <<EOF
-EOF
+# socketio.env ファイルを作成（内容が空）
+sudo touch /etc/nahlund/socketio.env
