@@ -38,6 +38,7 @@ services:
       - SERVER_HOST=server:${SERVER_PORT:-3001}
       - SOCKETIO_HOST=http://socketio:${SOCKETIO_PORT:-3002}
       - DISK_CACHE_BASE_PATH=/var/cache
+      - RUST_BACKTRACE=full
     expose:
       - ${SERVER_PORT:-3001}
     networks:
@@ -45,7 +46,6 @@ services:
     ports:
       - ${SERVER_PORT:-3001}:${SERVER_PORT:-3001}
     volumes:
-      - ../nahlun-server/target:/app/target
       - disk-cache:/var/cache
   socketio:
     build:
@@ -55,14 +55,13 @@ services:
       - ./dev.env
     environment:
       - SOCKETIO_HOST=socketio:${SOCKETIO_PORT:-3002}
+      - RUST_BACKTRACE=full
     expose:
       - ${SOCKETIO_PORT:-3002}
     networks:
       - internal
     ports:
       - ${SOCKETIO_PORT:-3002}:${SOCKETIO_PORT:-3002}
-    volumes:
-      - ../nahlun-socketio/target:/app/target
 volumes:
   disk-cache:
     name: nahlund-dev-disk-cache
