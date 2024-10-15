@@ -44,6 +44,7 @@ download_zstd_file() {
 
 #### 一般的なファイルのダウンロード
 download_file "https://raw.githubusercontent.com/azishio/nahlund/refs/heads/main/docker-compose.yml" "/opt/nahlund/docker-compose.yml"
+download_file "https://raw.githubusercontent.com/azishio/nahlund/refs/heads/main/neo4j_extension_script.sh" "/opt/nahlund/neo4j_scripts/neo4j_extension_script.sh"
 download_file "https://raw.githubusercontent.com/azishio/nahlund/refs/heads/main/nahlund.service" "/etc/systemd/system/nahlund.service"
 
 #### .zst ファイルのダウンロードと解凍
