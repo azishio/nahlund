@@ -6,11 +6,13 @@ services:
     environment:
       - NEO4J_AUTH=neo4j/password
       - NEO4JLABS_PLUGINS=["apoc"]
+      - EXTENSION_SCRIPT=/scripts/neo4j_extension_script.sh
     env_file:
       - /etc/nahlund/neo4j.env
     volumes:
       - nahlun-neo4j-data:/data
       - nahlun-neo4j-logs:/logs
+      - /opt/nahlund/neo4j_scripts:/scripts
       - /etc/nahlund/import:/import
   socketio:
     image: ghcr.io/azishio/nahlun-socketio:latest
