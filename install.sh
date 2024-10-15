@@ -5,7 +5,7 @@ set -eu
 #### ディレクトリの作成
 sudo mkdir -p /etc/nahlund/import /opt/nahlund/neo4j_scripts
 
-#### ファイルのコピー
+#### 一般的なファイルのダウンロード関数
 download_file() {
   local url="$1"
   local output="$2"
@@ -19,31 +19,55 @@ download_file() {
   fi
 }
 
-download_file https://raw.githubusercontent.com/azishio/nahlund/refs/heads/main/docker-compose.yml /opt/nahlund/docker-compose.yml
-download_file https://raw.githubusercontent.com/azishio/nahlund/refs/heads/main/nahlund.service /etc/systemd/system/nahlund.service
+#### .zst ファイルのダウンロード関数
+download_zstd_file() {
+  local url="$1"
+  local zst_output="$2"
+  local decompressed_output="$3"
 
-download_file https://github.com/azishio/rnet/releases/latest/download/river_node.csv.zst /etc/nahlund/import/river_node.csv.zst
-download_file https://github.com/azishio/rnet/releases/latest/download/river_link.csv.zst /etc/nahlund/import/river_link.csv.zst
-download_file https://github.com/azishio/rnet/releases/latest/download/delaunay.csv.zst /etc/nahlund/import/delaunay.csv.zst
+  if [ -f "$decompressed_output" ]; then
+    echo "File $decompressed_output already exists, skipping download and decompression."
+  else
+    echo "Downloading $url to $zst_output..."
+    sudo curl -#fL "$url" -o "$zst_output"
+    echo "Downloaded $url to $zst_output."
 
-#### ファイルの解凍（対象の .zst ファイルが存在する場合のみ）
-decompress_file() {
-  local input="$1"
-  local output="$2"
+    echo "Decompressing $zst_output to $decompressed_output..."
+    sudo zstd -d "$zst_output" -o "$decompressed_output"
+    echo "Decompressed $zst_output to $decompressed_output."
 
-  if [ -f "$input" ]; then
-    echo "Decompressing $input to $output..."
-    sudo zstd -d "$input" -o "$output"
-    echo "Decompressed $input to $output."
+    echo "Removing $zst_output..."
+    sudo rm "$zst_output"
+    echo "Removed $zst_output."
   fi
 }
 
-decompress_file /etc/nahlund/import/river_node.csv.zst /etc/nahlund/import/river_node.csv
-decompress_file /etc/nahlund/import/river_link.csv.zst /etc/nahlund/import/river_link.csv
-decompress_file /etc/nahlund/import/delaunay.csv.zst /etc/nahlund/import/delaunay.csv
+#### 一般的なファイルのダウンロード
+download_file "https://raw.githubusercontent.com/azishio/nahlund/refs/heads/main/docker-compose.yml" "/opt/nahlund/docker-compose.yml"
+download_file "https://raw.githubusercontent.com/azishio/nahlund/refs/heads/main/nahlund.service" "/etc/systemd/system/nahlund.service"
 
-### 圧縮ファイルの削除
-sudo rm /etc/nahlund/import/*.zst
+#### .zst ファイルのダウンロードと解凍
+
+# river_node.csv
+RIVER_NODE_URL="https://github.com/azishio/rnet/releases/latest/download/river_node.csv.zst"
+RIVER_NODE_ZST="/etc/nahlund/import/river_node.csv.zst"
+RIVER_NODE_CSV="/etc/nahlund/import/river_node.csv"
+
+download_zstd_file "$RIVER_NODE_URL" "$RIVER_NODE_ZST" "$RIVER_NODE_CSV"
+
+# river_link.csv
+RIVER_LINK_URL="https://github.com/azishio/rnet/releases/latest/download/river_link.csv.zst"
+RIVER_LINK_ZST="/etc/nahlund/import/river_link.csv.zst"
+RIVER_LINK_CSV="/etc/nahlund/import/river_link.csv"
+
+download_zstd_file "$RIVER_LINK_URL" "$RIVER_LINK_ZST" "$RIVER_LINK_CSV"
+
+# delaunay.csv
+DELAUNAY_URL="https://github.com/azishio/rnet/releases/latest/download/delaunay.csv.zst"
+DELAUNAY_ZST="/etc/nahlund/import/delaunay.csv.zst"
+DELAUNAY_CSV="/etc/nahlund/import/delaunay.csv"
+
+download_zstd_file "$DELAUNAY_URL" "$DELAUNAY_ZST" "$DELAUNAY_CSV"
 
 #### 初期環境変数ファイルの作成
 # システムメモリをバイト単位で取得
