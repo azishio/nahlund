@@ -53,8 +53,8 @@ services:
       - ${SOCKETIO_PORT-3002}:${SOCKETIO_PORT-3002}
 volumes:
   disk-cache:
-    - name: nahlun-disk-cache
+    - name: nahlund-disk-cache
   neo4j-data:
-    - name: nahlun-neo4j-data
+    - name: nahlund-neo4j-data
   neo4j-logs:
-    - name: nahlun-neo4j-logs
+    - name: nahlund-neo4j-logs
