@@ -26,7 +26,7 @@ services:
   server:
     build:
       context: ../nahlun-server
-      dockerfile: Dockerfile
+      dockerfile: Dockerfile.dev
     env_file:
       - ./dev.env
     environment:
@@ -43,11 +43,12 @@ services:
     ports:
       - ${SERVER_PORT:-3001}:${SERVER_PORT:-3001}
     volumes:
+      - ../nahlun-server/target:/app/target
       - disk-cache:/var/cache
   socketio:
     build:
       context: ../nahlun-socketio
-      dockerfile: Dockerfile
+      dockerfile: Dockerfile.dev
     env_file:
       - ./dev.env
     environment:
@@ -58,6 +59,8 @@ services:
       - internal
     ports:
       - ${SOCKETIO_PORT:-3002}:${SOCKETIO_PORT:-3002}
+    volumes:
+      - ../nahlun-socketio/target:/app/target
 volumes:
   disk-cache:
     name: nahlund-dev-disk-cache
