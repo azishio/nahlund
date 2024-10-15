@@ -49,20 +49,20 @@ memory_cache_max_size=$((memory_size_byte / 4))
 sudo mkdir -p /etc/nahlund
 
 # server.env ファイルを作成
-sudo tee /etc/nahlund/server.env > /dev/null <<EOF
-SOCKETIO_HOST=localhost:3002
-SERVER_HOST=localhost:3001
+sudo tee /etc/nahlund/.env > /dev/null <<EOF
+# port
+SERVER_PORT=3001
+SOCKETIO_PORT=3002
+
+# cors setting
 CLIENT_HOST=localhost:3000
+
+# server cache [bytes]
 DISK_CACHE_MAX_SIZE=${disk_cache_max_size}
 MEMORY_CACHE_MAX_SIZE=${memory_cache_max_size}
-EOF
 
-# neo4j.env ファイルを作成
-sudo tee /etc/nahlund/neo4j.env > /dev/null <<EOF
+# neo4j
 NEO4J_server_memory_heap_initial__size=${neo4j_memory_size}G
 NEO4J_server_memory_heap_max__size=${neo4j_memory_size}G
 NEO4J_server_memory_pagecache_size=${page_cache_size}G
 EOF
-
-# socketio.env ファイルを作成（内容が空）
-sudo touch /etc/nahlund/socketio.env

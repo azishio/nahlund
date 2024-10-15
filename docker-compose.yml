@@ -1,42 +1,60 @@
-services:
-  neo4j:
-    image: neo4j:5.24-community
-    networks:
-      - internal
-    environment:
-      - NEO4J_AUTH=neo4j/password
-      - NEO4JLABS_PLUGINS=["apoc"]
-      - EXTENSION_SCRIPT=/scripts/neo4j_extension_script.sh
-    env_file:
-      - /etc/nahlund/neo4j.env
-    volumes:
-      - nahlun-neo4j-data:/data
-      - nahlun-neo4j-logs:/logs
-      - /opt/nahlund/neo4j_scripts:/scripts
-      - /etc/nahlund/import:/import
-  socketio:
-    image: ghcr.io/azishio/nahlun-socketio:latest
-    networks:
-      - internal
-    env_file:
-      - /etc/nahlund/socketio.env
-  server:
-    image: ghcr.io/azishio/nahlun-server:latest
-    networks:
-      - internal
-    environment:
-      - NEO4J_AUTH=neo4j/password
-      - NEO4J_DB=neo4j
-      - NEO4J_URI=localhost:7687
-      - DISK_CACHE_BASE_PATH=/var/cache
-    env_file:
-      - /etc/nahlund/server.env
-    volumes:
-      - nahlun-disk-cache:/var/cache
 networks:
   internal:
     driver: bridge
+services:
+  neo4j:
+    env_file:
+      - /etc/nahlund/.env
+    environment:
+      - NEO4J_AUTH=neo4j/password
+      - NEO4J_URI=neo4j:7687
+      - NEO4JLABS_PLUGINS=["apoc"]
+      - EXTENSION_SCRIPT=/scripts/neo4j_extension_script.sh
+    expose:
+      - 7687
+    image: neo4j:5.24-community
+    networks:
+      - internal
+    volumes:
+      - neo4j-data:/data
+      - neo4j-logs:/logs
+      - /opt/nahlund/neo4j_scripts:/scripts
+      - /etc/nahlund/import:/import
+  server:
+    env_file:
+      - /etc/nahlund/.env
+    environment:
+      - NEO4J_AUTH=neo4j/password
+      - NEO4J_URI=neo4j:7687
+      - NEO4J_DB=neo4j
+      - SERVER_HOST=server:${SERVER_PORT-3001}
+      - SOCKETIO_HOST=socketio:${SOCKETIO_PORT-3002}
+      - DISK_CACHE_BASE_PATH=/var/cache
+    expose:
+      - ${SERVER_PORT-3001}
+    image: ghcr.io/azishio/nahlun-server:latest
+    networks:
+      - internal
+    ports:
+      - ${SERVER_PORT-3001}:${SERVER_PORT-3001}
+    volumes:
+      - disk-cache:/var/cache
+  socketio:
+    env_file:
+      - /etc/nahlund/.env
+    environment:
+      - SOCKETIO_HOST=socketio:${SOCKETIO_PORT-3002}
+    expose:
+      - ${SOCKETIO_PORT-3002}
+    image: ghcr.io/azishio/nahlun-socketio:latest
+    networks:
+      - internal
+    ports:
+      - ${SOCKETIO_PORT-3002}:${SOCKETIO_PORT-3002}
 volumes:
-  nahlun-neo4j-data:
-  nahlun-neo4j-logs:
-  nahlun-disk-cache:
+  disk-cache:
+    - name: nahlun-disk-cache
+  neo4j-data:
+    - name: nahlun-neo4j-data
+  neo4j-logs:
+    - name: nahlun-neo4j-logs
