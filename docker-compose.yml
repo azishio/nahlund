@@ -7,7 +7,6 @@ services:
       - /etc/nahlund/.env
     environment:
       - NEO4J_AUTH=neo4j/password
-      - NEO4J_URI=neo4j:7687
       - NEO4JLABS_PLUGINS=["apoc"]
       - EXTENSION_SCRIPT=/scripts/neo4j_extension_script.sh
     expose:
