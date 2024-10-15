@@ -1,0 +1,67 @@
+networks:
+  internal:
+    driver: bridge
+services:
+  neo4j:
+    env_file:
+      - ./dev.env
+    environment:
+      - NEO4J_AUTH=neo4j/password
+      - NEO4J_URI=neo4j:7687
+      - NEO4JLABS_PLUGINS=["apoc"]
+      - EXTENSION_SCRIPT=/scripts/neo4j_extension_script.sh
+    expose:
+      - 7687
+    image: neo4j:5.24-community
+    networks:
+      - internal
+    ports:
+      - 7687:7687
+      - 7474:7474
+    volumes:
+      - neo4j-data:/data
+      - neo4j-logs:/logs
+      - /opt/nahlund/neo4j_scripts:/scripts
+      - /etc/nahlund/import:/import
+  server:
+    build:
+      context: ../nahlun-server
+      dockerfile: Dockerfile
+    env_file:
+      - ./dev.env
+    environment:
+      - NEO4J_AUTH=neo4j/password
+      - NEO4J_URI=neo4j:7687
+      - NEO4J_DB=neo4j
+      - SERVER_HOST=server:${SERVER_PORT:-3001}
+      - SOCKETIO_HOST=socketio:${SOCKETIO_PORT:-3002}
+      - DISK_CACHE_BASE_PATH=/var/cache
+    expose:
+      - ${SERVER_PORT:-3001}
+    networks:
+      - internal
+    ports:
+      - ${SERVER_PORT:-3001}:${SERVER_PORT:-3001}
+    volumes:
+      - disk-cache:/var/cache
+  socketio:
+    build:
+      context: ../nahlun-socketio
+      dockerfile: Dockerfile
+    env_file:
+      - ./dev.env
+    environment:
+      - SOCKETIO_HOST=socketio:${SOCKETIO_PORT:-3002}
+    expose:
+      - ${SOCKETIO_PORT:-3002}
+    networks:
+      - internal
+    ports:
+      - ${SOCKETIO_PORT:-3002}:${SOCKETIO_PORT:-3002}
+volumes:
+  disk-cache:
+    - name: nahlund-dev-disk-cache
+  neo4j-data:
+    - name: nahlund-dev-neo4j-data
+  neo4j-logs:
+    - name: nahlund-dev-neo4j-logs
