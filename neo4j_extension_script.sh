@@ -16,11 +16,12 @@ echo "Complete the database deletion process"
 
 # CSVデータのインポート
 echo "Start the data import process"
-bin/neo4j-admin database import \
+bin/neo4j-admin database import full neo4j \
+  --nodes=/import/tiles.csv \
   --nodes=/import/river_node.csv \
   --relationships=/import/river_link.csv \
-  --relationships=/import/delaunay.csv \
-  neo4j
+  --relationships=/import/tile_family_relationship.csv \
+  --relationships=/import/tile_membership.csv
 echo "Complete the data import process"
 
 # import処理の完了フラグファイルの作成

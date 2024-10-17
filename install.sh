@@ -63,12 +63,26 @@ RIVER_LINK_CSV="/etc/nahlund/import/river_link.csv"
 
 download_zstd_file "$RIVER_LINK_URL" "$RIVER_LINK_ZST" "$RIVER_LINK_CSV"
 
-# delaunay.csv
-DELAUNAY_URL="https://github.com/azishio/rnet/releases/latest/download/delaunay.csv.zst"
-DELAUNAY_ZST="/etc/nahlund/import/delaunay.csv.zst"
-DELAUNAY_CSV="/etc/nahlund/import/delaunay.csv"
+# tiles.csv
+TILES_URL="https://github.com/azishio/rnet/releases/latest/download/tiles.csv.zst"
+TILES_ZST="/etc/nahlund/import/tiles.csv.zst"
+TILES_CSV="/etc/nahlund/import/tiles.csv"
 
-download_zstd_file "$DELAUNAY_URL" "$DELAUNAY_ZST" "$DELAUNAY_CSV"
+download_zstd_file "$TILES_URL" "$TILES_ZST" "$TILES_CSV"
+
+# tile_family_relationship.csv
+TILE_FAMILY_RELATIONSHIP_URL="https://github.com/azishio/rnet/releases/latest/download/tile_family_relationship.csv.zst"
+TILE_FAMILY_RELATIONSHIP_ZST="/etc/nahlund/import/tile_family_relationship.csv.zst"
+TILE_FAMILY_RELATIONSHIP_CSV="/etc/nahlund/import/tile_family_relationship.csv"
+
+download_zstd_file "$TILE_FAMILY_RELATIONSHIP_URL" "$TILE_FAMILY_RELATIONSHIP_ZST" "$TILE_FAMILY_RELATIONSHIP_CSV"
+
+# tile_membership.csv
+TILE_MEMBERSHIP_URL="https://github.com/azishio/rnet/releases/latest/download/tile_membership.csv.zst"
+TILE_MEMBERSHIP_ZST="/etc/nahlund/import/tile_membership.csv.zst"
+TILE_MEMBERSHIP_CSV="/etc/nahlund/import/tile_membership.csv"
+
+download_zstd_file "$TILE_MEMBERSHIP_URL" "$TILE_MEMBERSHIP_ZST" "$TILE_MEMBERSHIP_CSV"
 
 #### 初期環境変数ファイルの作成
 # システムメモリをバイト単位で取得
